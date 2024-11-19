@@ -1,0 +1,37 @@
+#include <iostream>
+#include <cstdlib>  // For rand() and srand()
+#include <ctime>    // For time()
+using namespace std;
+
+int main() {
+    // Initialize the random number generator
+    srand(static_cast<unsigned int>(time(0)));
+
+    int lowerLimit = 1, upperLimit = 100;
+    int secretNumber = rand() % (upperBound - lowerBound + 1) + lowerBound;
+    int userGuess;
+    int attempts = 0;
+
+    cout << "Welcome to the Number Guessing Game!" << endl;
+    cout << "I have picked a number between " << lowerBound << " and " << upperBound << "." << endl;
+    cout << "Can you guess what it is?" << endl;
+
+    // Main game loop
+    while (true) {
+        cout << "Enter your guess: ";
+        cin >> userGuess;
+        attempts++;
+
+        // Check if the guess is correct
+        if (userGuess < secretNumber) {
+            cout << "Too low! Try again." << endl;
+        } else if (userGuess > secretNumber) {
+            cout << "Too high! Try again." << endl;
+        } else {
+            cout << "Congratulations! You've guessed the number " << secretNumber << " in " << attempts << " attempts!" << endl;
+            break;  // Exit the loop when the user guesses correctly
+        }
+    }
+
+    return 0;
+}
