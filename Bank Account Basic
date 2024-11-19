@@ -1,0 +1,65 @@
+#include <iostream>
+#include <fstream>  // For file handling
+#include <string>
+using namespace std;
+
+class BankAccount {
+private:
+    string accountHolderName;
+    int accountNumber;
+    double balance;
+
+public:
+    // Constructor to initialize account
+    BankAccount(string name, int accNum, double initialBalance) {
+        accountHolderName = name;
+        accountNumber = accNum;
+        balance = initialBalance;
+    }
+
+    // Function to deposit money
+    void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            cout << "Deposited: $" << amount << endl;
+        } else {
+            cout << "Amount must be positive!" << endl;
+        }
+    }
+
+    // Function to withdraw money
+    void withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            cout << "Withdrawn: $" << amount << endl;
+        } else if (amount > balance) {
+            cout << "Insufficient balance!" << endl;
+        } else {
+            cout << "Amount must be positive!" << endl;
+        }
+    }
+
+    // Function to check balance
+    void checkBalance() const {
+        cout << "Account balance: $" << balance << endl;
+    }
+
+    // Function to display account details
+    void displayAccountDetails() const {
+        cout << "Account Holder: " << accountHolderName << endl;
+        cout << "Account Number: " << accountNumber << endl;
+        checkBalance();
+    }
+
+    // Save account details to a file (for persistence)
+    void saveToFile() const {
+        ofstream outFile("bank_account.txt", ios::app);  // Open file for appending
+        outFile << "Account Holder: " << accountHolderName << endl;
+        outFile << "Account Number: " << accountNumber << endl;
+        outFile << "Balance: $" << balance << endl;
+        outFile << "-----------------------------" << endl;
+        outFile.close();
+    }
+
+    // Load account details from file (for persistence)
+    static void l
