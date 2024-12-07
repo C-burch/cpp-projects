@@ -1,0 +1,226 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <iomanip> // For formatting currency output
+
+// Class to represent a Bank Account
+class BankAccount {
+private:
+    std::string accountHolder;
+    double balance;
+    std::string accountNumber;
+    static int nextAccountNumber; // Static variable to generate unique account numbers
+
+public:
+    // Constructor to initialize the account
+    BankAccount(std::string holder, double initialDeposit = 0.0) {
+        accountHolder = holder;
+        balance = initialDeposit;
+        accountNumber = generateAccountNumber();
+    }
+
+    // Generate a unique account number
+    std::string generateAccountNumber() {
+        return "AC" + std::to_string(nextAccountNumber++);
+    }
+
+    // Deposit money into the account
+    void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            std::cout << "Deposited: $" << amount << "\n";
+        } else {
+            std::cout << "Invalid deposit amount.\n";
+        }
+    }
+
+    // Withdraw money from the account
+    bool withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            std::cout << "Withdrew: $" << amount << "\n";
+            return true;
+        } else {
+            std::cout << "Insufficient funds or invalid withdrawal amount.\n";
+            return false;
+        }
+    }
+
+    // Check the account balance
+    void checkBalance() const {
+        std::cout << "Balance for " << accountHolder << " (" << accountNumber << "): $" << std::fixed << std::setprecision(2) << balance << "\n";
+    }
+
+    // Calculate interest for the account (assuming a fixed rate of 5% annual interest)
+    void applyInterest() {
+        double interest = balance * 0.05;  // 5% interest rate
+        balance += interest;
+        std::cout << "Interest applied: $" << std::fixed << std::setprecision(2) << interest << "\n";
+    }
+
+    // Get the account holder's name
+    std::string getAccountHolder() const {
+        return accountHolder;
+    }
+
+    // Get the account balance (for internal use)
+    double getBalance() const {
+        return balance;
+    }
+
+    // Get the account number (for internal use)
+    std::string getAccountNumber() const {
+        return accountNumber;
+    }
+};
+
+// Initialize static variable for account number generation
+int BankAccount::nextAccountNumber = 1001;
+
+// Class to represent the Bank System
+class Bank {
+private:
+    std::vector<BankAccount> accounts;
+
+public:
+    // Add a new account to the bank
+    void addAccount(const std::string& holder, double initialDeposit = 0.0) {
+        accounts.push_back(BankAccount(holder, initialDeposit));
+        std::cout << "Account created for " << holder << " with initial deposit of $" << initialDeposit << "\n";
+    }
+
+    // Find an account by account holder name
+    BankAccount* findAccount(const std::string& holder) {
+        for (auto& account : accounts) {
+            if (account.getAccountHolder() == holder) {
+                return &account;
+            }
+        }
+        return nullptr;
+    }
+
+    // Find an account by account number
+    BankAccount* findAccountByNumber(const std::string& accountNumber) {
+        for (auto& account : accounts) {
+            if (account.getAccountNumber() == accountNumber) {
+                return &account;
+            }
+        }
+        return nullptr;
+    }
+
+    // Display all account holders
+    void listAccounts() const {
+        std::cout << "Accounts List:\n";
+        for (const auto& account : accounts) {
+            std::cout << "- " << account.getAccountHolder() << " (" << account.getAccountNumber() << ")\n";
+        }
+    }
+};
+
+// Main function to interact with the banking system
+int main() {
+    Bank myBank;
+    int option;
+    std::string holder, accountNumber;
+    double amount;
+
+    do {
+        std::cout << "\n*** Welcome to the Bank System ***\n";
+        std::cout << "1. Create an Account\n";
+        std::cout << "2. Deposit Money\n";
+        std::cout << "3. Withdraw Money\n";
+        std::cout << "4. Check Balance\n";
+        std::cout << "5. Apply Interest\n";
+        std::cout << "6. List All Accounts\n";
+        std::cout << "7. Exit\n";
+        std::cout << "Choose an option: ";
+        std::cin >> option;
+
+        switch (option) {
+            case 1:
+                std::cout << "Enter account holder's name: ";
+                std::cin.ignore();  // To ignore the trailing newline from previous input
+                std::getline(std::cin, holder);
+                std::cout << "Enter initial deposit (default 0.0): $";
+                std::cin >> amount;
+                if (amount < 0) amount = 0.0;  // Default to 0 if invalid input
+                myBank.addAccount(holder, amount);
+                break;
+
+            case 2:
+                std::cout << "Enter account holder's name: ";
+                std::cin.ignore();
+                std::getline(std::cin, holder);
+                {
+                    BankAccount* account = myBank.findAccount(holder);
+                    if (account) {
+                        std::cout << "Enter deposit amount: $";
+                        std::cin >> amount;
+                        account->deposit(amount);
+                    } else {
+                        std::cout << "Account not found.\n";
+                    }
+                }
+                break;
+
+            case 3:
+                std::cout << "Enter account holder's name: ";
+                std::cin.ignore();
+                std::getline(std::cin, holder);
+                {
+                    BankAccount* account = myBank.findAccount(holder);
+                    if (account) {
+                        std::cout << "Enter withdrawal amount: $";
+                        std::cin >> amount;
+                        account->withdraw(amount);
+                    } else {
+                        std::cout << "Account not found.\n";
+                    }
+                }
+                break;
+
+            case 4:
+                std::cout << "Enter account holder's name: ";
+                std::cin.ignore();
+                std::getline(std::cin, holder);
+                {
+                    BankAccount* account = myBank.findAccount(holder);
+                    if (account) {
+                        account->checkBalance();
+                    } else {
+                        std::cout << "Account not found.\n";
+                    }
+                }
+                break;
+
+            case 5:
+                std::cout << "Enter account holder's name: ";
+                std::cin.ignore();
+                std::getline(std::cin, holder);
+                {
+                    BankAccount* account = myBank.findAccount(holder);
+                    if (account) {
+                        account->applyInterest();
+                    } else {
+                        std::cout << "Account not found.\n";
+                    }
+                }
+                break;
+
+            case 6:
+                myBank.listAccounts();
+                break;
+
+            case 7:
+                std::cout << "Exiting system. Goodbye!\n";
+                break;
+
+            default:
+                std::cout << "Invalid option, please try again.\n";
+                break;
+        }
+    } while (option != 7);
+
+    return 0;
+}
