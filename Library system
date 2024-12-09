@@ -1,0 +1,158 @@
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+// class to hold book details
+class Book {
+private:
+    string title;
+    string author;
+    int year;
+    string genre;
+
+public:
+    // Constructor to initialize book
+    Book(string t, string a, int y, string g) : title(t), author(a), year(y), genre(g) {}
+
+    // Function to display book details
+    void display() const {
+        cout << "Title: " << title << "\nAuthor: " << author << "\nYear: " << year << "\nGenre: " << genre << endl;
+    }
+
+    // Getters for book details
+    string getTitle() const { return title; }
+    string getAuthor() const { return author; }
+    int getYear() const { return year; }
+    string getGenre() const { return genre; }
+};
+
+// Function to add a book to the system
+void addBook(vector<Book>& library) {
+    string title, author, genre;
+    int year;
+
+    cout << "Enter book title: ";
+    cin.ignore(); // To clear the buffer before reading string
+    getline(cin, title);
+    
+    cout << "Enter book author: ";
+    getline(cin, author);
+    
+    cout << "Enter book year: ";
+    cin >> year;
+
+    cout << "Enter book genre: ";
+    cin.ignore(); // To clear the buffer
+    getline(cin, genre);
+
+    // Create a new book and add to the library
+    Book newBook(title, author, year, genre);
+    library.push_back(newBook);
+
+    // Save the book to file
+    ofstream outFile("library.txt", ios::app); // Open file in append mode
+    if (outFile.is_open()) {
+        outFile << title << "," << author << "," << year << "," << genre << endl;
+        outFile.close();
+        cout << "Book added successfully!" << endl;
+    } else {
+        cout << "Failed to open file!" << endl;
+    }
+}
+
+// Function to display all books in the system
+void displayBooks(const vector<Book>& library) {
+    if (library.empty()) {
+        cout << "No books available." << endl;
+    } else {
+        for (const auto& book : library) {
+            book.display();
+            cout << "-------------------" << endl;
+        }
+    }
+}
+
+// Function to search a book by title
+void searchBookByTitle(const vector<Book>& library) {
+    string searchTitle;
+    cout << "Enter the title of the book to search: ";
+    cin.ignore(); // To clear the buffer before reading string
+    getline(cin, searchTitle);
+
+    bool found = false;
+    for (const auto& book : library) {
+        if (book.getTitle() == searchTitle) {
+            book.display();
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        cout << "No book found with the title: " << searchTitle << endl;
+    }
+}
+
+// Function to load books from file
+void loadBooksFromFile(vector<Book>& library) {
+    ifstream inFile("library.txt");
+    string line, title, author, genre;
+    int year;
+
+    if (inFile.is_open()) {
+        while (getline(inFile, line)) {
+            size_t pos1 = line.find(',');
+            size_t pos2 = line.find(',', pos1 + 1);
+            size_t pos3 = line.find(',', pos2 + 1);
+
+            title = line.substr(0, pos1);
+            author = line.substr(pos1 + 1, pos2 - pos1 - 1);
+            year = stoi(line.substr(pos2 + 1, pos3 - pos2 - 1));
+            genre = line.substr(pos3 + 1);
+
+            library.push_back(Book(title, author, year, genre));
+        }
+        inFile.close();
+    } else {
+        cout << "Failed to open the file for reading!" << endl;
+    }
+}
+
+int main() {
+    vector<Book> library;
+    loadBooksFromFile(library);  // Load books from file
+
+    int choice;
+
+    do {
+        cout << "\nLibrary Management System\n";
+        cout << "1. Add a new book\n";
+        cout << "2. Display all books\n";
+        cout << "3. Search a book by title\n";
+        cout << "4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                addBook(library);
+                break;
+            case 2:
+                displayBooks(library);
+                break;
+            case 3:
+                searchBookByTitle(library);
+                break;
+            case 4:
+                cout << "Exiting the system. Goodbye!" << endl;
+                break;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    } while (choice != 4);
+
+    return 0;
+}
