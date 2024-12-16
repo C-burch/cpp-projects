@@ -1,0 +1,27 @@
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int number;
+    long long factorial = 1;  // Using long long to handle larger factorials
+
+    // Ask the user for a number
+    cout << "Enter a positive integer: ";
+    cin >> number;
+
+    // Check if the number is negative
+    if (number < 0) {
+        cout << "Factorial is not defined for negative numbers." << endl;
+    } else {
+        // Calculate the factorial
+        for (int i = 1; i <= number; i++) {
+            factorial *= i;
+        }
+        
+        // Display the result
+        cout << "Factorial of " << number << " is " << factorial << endl;
+    }
+
+    return 0;
+}
