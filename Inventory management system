@@ -1,0 +1,157 @@
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <string>
+using namespace std;
+
+class Product {
+public:
+    string name;
+    int quantity;
+    double price;
+
+    Product(string name, int quantity, double price)
+        : name(name), quantity(quantity), price(price) {}
+
+    void displayProduct() {
+        cout << "Product Name: " << name << ", Quantity: " << quantity << ", Price: $" << price << endl;
+    }
+
+    void updateQuantity(int newQuantity) {
+        quantity = newQuantity;
+    }
+
+    void updatePrice(double newPrice) {
+        price = newPrice;
+    }
+};
+
+class StoreInventory {
+private:
+    vector<Product> inventory;
+
+public:
+    void addProduct(const Product& product) {
+        inventory.push_back(product);
+    }
+
+    void displayInventory() {
+        if (inventory.empty()) {
+            cout << "Inventory is empty!" << endl;
+        } else {
+            for (const auto& product : inventory) {
+                product.displayProduct();
+            }
+        }
+    }
+
+    void searchProduct(const string& name) {
+        bool found = false;
+        for (const auto& product : inventory) {
+            if (product.name == name) {
+                product.displayProduct();
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            cout << "Product not found!" << endl;
+        }
+    }
+
+    void saveInventoryToFile(const string& filename) {
+        ofstream outFile(filename);
+        if (outFile.is_open()) {
+            for (const auto& product : inventory) {
+                outFile << product.name << "," << product.quantity << "," << product.price << endl;
+            }
+            outFile.close();
+            cout << "Inventory saved to " << filename << endl;
+        } else {
+            cout << "Unable to open file to save inventory." << endl;
+        }
+    }
+
+    void loadInventoryFromFile(const string& filename) {
+        ifstream inFile(filename);
+        if (inFile.is_open()) {
+            string name;
+            int quantity;
+            double price;
+            while (getline(inFile, name, ',')) {
+                inFile >> quantity;
+                inFile.ignore(); // To ignore the comma between quantity and price
+                inFile >> price;
+                inFile.ignore(); // To ignore the newline after price
+
+                inventory.push_back(Product(name, quantity, price));
+            }
+            inFile.close();
+            cout << "Inventory loaded from " << filename << endl;
+        } else {
+            cout << "Unable to open file to load inventory." << endl;
+        }
+    }
+};
+
+int main() {
+    StoreInventory store;
+
+    // Load existing inventory from a file if it exists
+    store.loadInventoryFromFile("inventory.txt");
+
+    int choice;
+    do {
+        cout << "\nStore Inventory Management System\n";
+        cout << "1. Add Product\n";
+        cout << "2. Display Inventory\n";
+        cout << "3. Search Product\n";
+        cout << "4. Save Inventory\n";
+        cout << "5. Load Inventory\n";
+        cout << "6. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cin.ignore(); // Ignore leftover newline from previous input
+
+        switch (choice) {
+        case 1: {
+            string name;
+            int quantity;
+            double price;
+
+            cout << "Enter product name: ";
+            getline(cin, name);
+            cout << "Enter product quantity: ";
+            cin >> quantity;
+            cout << "Enter product price: $";
+            cin >> price;
+
+            store.addProduct(Product(name, quantity, price));
+            break;
+        }
+        case 2:
+            store.displayInventory();
+            break;
+        case 3: {
+            string name;
+            cout << "Enter product name to search: ";
+            getline(cin, name);
+            store.searchProduct(name);
+            break;
+        }
+        case 4:
+            store.saveInventoryToFile("inventory.txt");
+            break;
+        case 5:
+            store.loadInventoryFromFile("inventory.txt");
+            break;
+        case 6:
+            cout << "Exiting program..." << endl;
+            break;
+        default:
+            cout << "Invalid choice, try again!" << endl;
+        }
+    } while (choice != 6);
+
+    return 0;
+}
