@@ -1,0 +1,74 @@
+#include <iostream>
+#include <string>
+
+void greeting(std::string name)
+{
+    std::cout << "Hello " << name << ", Welcome to the calculator program!\n";
+}
+
+double add(double a, double b)
+{
+    return a + b;
+}
+double subtract(double a, double b)
+{
+    return a - b;
+}
+double multiply(double a, double b)
+{
+    return a * b;
+}
+double divide(double a, double b)
+{
+    if (b == 0)
+    {
+        std::cout << "Error: Division by zero is not allowed.\n";
+    }
+    else return a / b;
+}
+
+int main()
+{
+    std::cout << "please enter your name: ";
+    std::string name;
+    std::getline(std::cin, name);
+    greeting(name);
+    std::cout << "Enter two numbers: ";
+
+	// Use double to allow for decimal numbers
+    double num1, num2;
+    std::cin >> num1 >> num2;
+
+    std::cout << "Choose an operation (+, -, *, /): ";
+    char operation;
+    std::cin >> operation;
+
+    double result;
+    switch (operation)
+    {
+    case '+':
+            result = add(num1, num2);
+            std::cout << "Result: " << result << "\n";
+            break;
+    case'-':
+            result = subtract(num1, num2);
+            std::cout << "Result: " << result << "\n";
+            break;
+    case'*':
+            result = multiply(num1, num2);
+            std::cout << "Result: " << result << "\n";
+			break;
+    case'/':
+				result = divide(num1, num2);
+				if (num2 != 0)
+				{
+					std::cout << "Result: " << result << "\n";
+				}
+				break;
+			default:
+				std::cout << "Invalid operation.\n";
+				break;
+
+    }
+        
+}
